@@ -18,7 +18,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { EditNameComponent } from '../gui-helpers/edit-name/edit-name.component';
 
 @Component({
-    moduleId: module.id,
     selector: 'app-header',
     templateUrl: 'header.component.html',
     styleUrls: ['header.component.css']
