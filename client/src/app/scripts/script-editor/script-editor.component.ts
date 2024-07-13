@@ -204,7 +204,7 @@ export class ScriptEditorComponent implements OnInit, OnDestroy {
 
         dialogRef.afterClosed().subscribe((result: DeviceTagSelectionData) => {
             if (result && result.variableId) {
-                let text = `${sysfnc.name}('${result.variableId}','YYYY/MM/DD','YYYY/MM/DD');`;
+                let text = `${sysfnc.name}('${result.variableId}','YYYY/MM/DD - 00:00:00','YYYY/MM/DD - 00:00:00').then((res)=>{}).catch((error)=>{});`;
                 this.insertText(text);
             }
         });

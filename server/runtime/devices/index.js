@@ -516,12 +516,18 @@ function getRequestResult(property) {
     return Device.getRequestResult(property);
 }
 
-function getHistoricalTag(tagId,fromDate,toDate){
-    var [fromYear,fromMonth,fromDay]=fromDate.split('/');
-    var [toYear,toMonth,toDay]=toDate.split('/');
-    var fromTs=new Date(fromYear,fromMonth-1,fromDay);
-    var toTs=new Date(toYear,toMonth-1,toDay);
-    //Check if geting date from script is correct
+async function getHistoricalTag(tagId,fromDate,toDate){
+    return new Promise((resolve,reject)=>{
+        //split dates to time and date
+    var [fromDt,fromTime]=fromDate?.trim().split('-');
+    var [toDt,toTime]=toDate?.trim().split('-');
+    var [fromYear,fromMonth,fromDay]=fromDt.split('/');
+    var [fromHours,fromMinutes,fromSeconds]=fromTime.split(":");
+    var [toYear,toMonth,toDay]=toDt.split('/');
+    var [toHours,toMinutes,toSeconds]=toTime.split(":");
+    var fromTs=new Date(fromYear,fromMonth-1,fromDay,fromHours,fromMinutes,fromSeconds);
+    var toTs=new Date(toYear,toMonth-1,toDay,toHours,toMinutes,toSeconds);
+    //Check if getting date from script is correct
     if(isNaN(fromTs)){
         fromTs=new Date();
     }
@@ -532,10 +538,11 @@ function getHistoricalTag(tagId,fromDate,toDate){
     toTs=toTs.getTime();
     fromTs=fromTs.getTime();
     daqstorage.getNodeValues(tagId,fromTs,toTs).then(res=>{
-        console.log(res);
-        return res;
+        resolve(res);
     }
     ).catch(err=>reject(err))
+    })
+    
 }
 
 var devices = module.exports = {
