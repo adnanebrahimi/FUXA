@@ -54,6 +54,7 @@ export class ScriptService {
                 try {
                     const code = `${parameterToAdd}${script.code}`;
                     const asyncScript = `(async () => { ${this.addSysFunctions(code)} })();`;
+                    console.log(asyncScript);
                     const result = eval(asyncScript);
                     observer.next(result);
                 } catch (err) {
@@ -89,6 +90,7 @@ export class ScriptService {
         code = code.replace(/\$setDeviceProperty\(/g, 'await this.$setDeviceProperty(');
         code = code.replace(/\$invokeObject\(/g, 'this.$invokeObject(');
         code = code.replace(/\$runServerScript\(/g, 'this.$runServerScript(');
+        code = code.replace(/\$getHistoricalTag\(/g, 'await this.$getHistoricalTag(');
         return code;
     }
 
@@ -150,5 +152,11 @@ export class ScriptService {
         let scriptToRun = Utils.clone(this.projectService.getScripts().find(dataScript => dataScript.name == scriptName));
         scriptToRun.parameters = params;
         return await lastValueFrom(this.runScript(scriptToRun));
+    }
+
+    public async $getHistoricalTag(tagId: string,fromDate: string,toDate: string){
+        return new Promise((resolve,reject)=>{
+            //
+        });
     }
 }
