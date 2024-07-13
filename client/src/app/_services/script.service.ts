@@ -9,6 +9,7 @@ import { ProjectService } from './project.service';
 import { HmiService, ScriptCommandEnum, ScriptCommandMessage } from './hmi.service';
 import { Utils } from '../_helpers/utils';
 import { DeviceType, TagDaq, TagDevice } from '../_models/device';
+import { ResWebApiService } from './rcgi/reswebapi.service';
 
 @Injectable({
     providedIn: 'root'
@@ -19,7 +20,7 @@ export class ScriptService {
 
     constructor(private http: HttpClient,
                 private projectService: ProjectService,
-                private hmiService: HmiService) {
+                private hmiService: HmiService,private reswebService: ResWebApiService) {
 
     }
 
@@ -90,7 +91,7 @@ export class ScriptService {
         code = code.replace(/\$setDeviceProperty\(/g, 'await this.$setDeviceProperty(');
         code = code.replace(/\$invokeObject\(/g, 'this.$invokeObject(');
         code = code.replace(/\$runServerScript\(/g, 'this.$runServerScript(');
-        code = code.replace(/\$getHistoricalTag\(/g, 'await this.$getHistoricalTag(');
+        code = code.replace(/\$getHistoricalTag\(/g, 'this.$getHistoricalTag(');
         return code;
     }
 
@@ -154,9 +155,9 @@ export class ScriptService {
         return await lastValueFrom(this.runScript(scriptToRun));
     }
 
-    public async $getHistoricalTag(tagId: string,fromDate: string,toDate: string){
+    public $getHistoricalTag(tagId: string,fromDate: string,toDate: string){
         return new Promise((resolve,reject)=>{
-            //
+            this.reswebService.getHistoricalTag(tagId,fromDate,toDate).subscribe(res=>resolve(res),err=>reject(err));
         });
     }
 }
