@@ -55,7 +55,6 @@ export class ScriptService {
                 try {
                     const code = `${parameterToAdd}${script.code}`;
                     const asyncScript = `(async () => { ${this.addSysFunctions(code)} })();`;
-                    console.log(asyncScript);
                     const result = eval(asyncScript);
                     observer.next(result);
                 } catch (err) {
