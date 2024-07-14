@@ -20,9 +20,8 @@ export class ScriptService {
 
     constructor(private http: HttpClient,
                 private projectService: ProjectService,
-                private hmiService: HmiService,private reswebService: ResWebApiService) {
-
-    }
+                private hmiService: HmiService,
+                private reswebService: ResWebApiService) {}
 
     runScript(script: Script) {
         return new Observable((observer) => {

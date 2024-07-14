@@ -7,7 +7,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const daqstorage = require('../storage/daqstorage');
 var sqlite3 = require('sqlite3').verbose();
 
 var settings        // Application settings
@@ -50,7 +49,6 @@ function _bind() {
         sql += "CREATE TABLE if not exists notifications (name TEXT PRIMARY KEY, value TEXT);";
         sql += "CREATE TABLE if not exists scripts (name TEXT PRIMARY KEY, value TEXT);";
         sql += "CREATE TABLE if not exists reports (name TEXT PRIMARY KEY, value TEXT);";
-        sql += "CREATE TABLE if not exists historical (tag_id TEXT,tag_name TEXT,tag_value TEXT,timestamp TEXT);";
         db_prj.exec(sql, function (err) {
             if (err) {
                 logger.error(`prjstorage.bind failed! ${err}`);
@@ -210,7 +208,6 @@ const TableType = {
     NOTIFICATIONS: 'notifications',
     SCRIPTS: 'scripts',
     REPORTS: 'reports',
-    Historical: 'historical'
 }
 
 module.exports = {
