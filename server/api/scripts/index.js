@@ -77,6 +77,10 @@ module.exports = {
                 }                
             }            
         });
+
+        /**
+         * POST get historical tag and return histories
+         */
         scriptsApp.post("/api/getHistoricalTag", secureFnc, async function (req, res, next) {
             var groups = checkGroupsFnc(req);
             if (res.statusCode === 403) {
