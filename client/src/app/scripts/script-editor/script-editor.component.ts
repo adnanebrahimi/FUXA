@@ -188,14 +188,12 @@ export class ScriptEditorComponent implements OnInit, OnDestroy {
 
     onAddSystemFunctionTag(sysfnc: SystemFunction) {
         const withMultTagsParam = sysfnc.params?.find(p => p === 'array');
-        const isGetHistorical= sysfnc.name.includes('$getHistoricalTags');
         let dialogRef = this.dialog.open(DeviceTagSelectionComponent, {
             disableClose: true,
             position: { top: '60px' },
             data: <DeviceTagSelectionData> {
                 variableId: null,
                 multiSelection:  withMultTagsParam ? true : false,
-                isHistorical:isGetHistorical,
                 deviceFilter: [ this.script.mode === ScriptMode.SERVER ? DeviceType.internal : null ]
             }
         });
