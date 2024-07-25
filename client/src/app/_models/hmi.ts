@@ -368,10 +368,10 @@ export interface GaugeIframeProperty {
 export interface GaugePanelProperty {
     viewName: string;
     variableId: string;
-    scaleMode: PanelPropertyScaleModeType;
+    scaleMode: PropertyScaleModeType;
 }
 
-export enum PanelPropertyScaleModeType {
+export enum PropertyScaleModeType {
     none = 'none',
     contain = 'contain',
     stretch = 'stretch'
@@ -524,10 +524,10 @@ export class Event {
 }
 
 export class DaqQuery {
-    gid: string;
+    gid?: string;
     from: any;
     to: any;
-    event: string;
+    event?: string;
     sids: string[];
 }
 
@@ -581,6 +581,8 @@ export class CardWidget {
     data: string;
     type: string;
     zoom = 1;
+    scaleMode: PropertyScaleModeType;
+
     constructor(type: string, data: string) {
         this.type = type;
         this.data = data;
@@ -588,10 +590,10 @@ export class CardWidget {
 }
 
 export enum CardWidgetType {
-    view = 'card.widget-view',
-    alarms = 'card.widget-alarms',
-    iframe = 'card.widget-iframe',
-    table = 'card.widget-table',
+    view = 'view',
+    alarms = 'alarms',
+    iframe = 'iframe',
+    table = 'table',
 }
 
 export enum LinkType {
