@@ -21,7 +21,7 @@ import { EditNameComponent } from '../../gui-helpers/edit-name/edit-name.compone
 @Component({
     selector: 'app-device-list',
     templateUrl: './device-list.component.html',
-    styleUrls: ['./device-list.component.css'],
+    styleUrls: ['./device-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DeviceListComponent implements OnInit, AfterViewInit {
@@ -320,6 +320,7 @@ export class DeviceListComponent implements OnInit, AfterViewInit {
                 for (let i = 0; i < tags.length; i++) {
                     tags[i].daq = tagOption.daq;
                     tags[i].format = tagOption.format;
+                    tags[i].deadband = tagOption.deadband;
                     tags[i].scale = tagOption.scale;
                     tags[i].scaleReadFunction = tagOption.scaleReadFunction;
                     tags[i].scaleReadParams = tagOption.scaleReadParams;
