@@ -58,7 +58,7 @@ fuxa
 You need to have installed [Node](https://nodejs.org/en/about/previous-releases) Version 18.
 
 **WARNING** In linux with nodejs Version 18 the installation could be a challenge.
-If you don't intend communicate with Siemens PLCs via S7 you can remove the node-snap7 library from the server/package.json
+If you don't intend to communicate with Siemens PLCs via S7, you can remove the ```node-snap7``` library from the ```server/package.json```. Similarly, if you don't intend to use ODBC to communicate with an external database, you can remove the ```odbc``` library from the ```server/package.json```.
 
 ```
 cd ./server
@@ -139,12 +139,6 @@ If you want to raise a pull-request with a new feature, or a refactoring of exis
 Please ensure you follow the coding standards used through-out the existing code base. Some basic rules include:
 - Indent with 4-spaces, no tabs.
 - Opening brace on same line as if/for/function and so on, closing brace on its own line.
-
-## Some collaborations
-<div >
-    <a href="https://wiki.seeedstudio.com/reTerminal-DM_intro_FUXA/" target="_blank" style="margin-right: 100px; line-height: 60px">
-        <img src="https://frangoteam.org/assets/images/seeed-studio2.png" alt="" style="vertical-align: top"></a>
-</div>
 
 ## Let us know!
 We’d be really happy if you send us your own shapes in order to collect a library to share it with others. Just send an email to info@frangoteam.org and do let us know if you have any questions or suggestions regarding our work.

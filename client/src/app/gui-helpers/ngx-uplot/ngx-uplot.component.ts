@@ -122,7 +122,7 @@ export class NgxUplotComponent implements OnInit, OnDestroy {
             spanGaps: false,
             // // in-legend display
             label: 'Serie',
-            value: (self, rawValue) => rawValue.toFixed(this.options.decimalsPrecision),
+            value: (self, rawValue) => rawValue?.toFixed(this.options.decimalsPrecision),
             // // series style
             stroke: 'red',
             width: 1,
@@ -182,6 +182,9 @@ export class NgxUplotComponent implements OnInit, OnDestroy {
     init(options?: ChartOptions, rawData?: boolean) {
         this.data = [[]];
         this.rawData = rawData;
+        if (!Utils.isNullOrUndefined(options?.rawData)) {
+            this.rawData = options.rawData;
+        }
         if (options) {
             this.options = options;
             if (!options.id) {
@@ -462,6 +465,7 @@ export interface ChartOptions extends NgxOptions {
     loadOldValues?: boolean;
 
     scriptId?: string;
+    rawData?: boolean;
 }
 
 export interface NgxSeries extends Series {

@@ -15,7 +15,7 @@ import {
 import { Subject, Subscription, take } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
 
-import { Event, GaugeEvent, GaugeEventActionType, GaugeSettings, GaugeProperty, GaugeEventType, GaugeRangeProperty, GaugeStatus, Hmi, View, ViewType, Variable, ZoomModeType, InputOptionType, DocAlignType, DictionaryGaugeSettings, GaugeEventRelativeFromType } from '../_models/hmi';
+import { Event, GaugeEvent, GaugeEventActionType, GaugeSettings, GaugeProperty, GaugeEventType, GaugeRangeProperty, GaugeStatus, Hmi, View, ViewType, Variable, ZoomModeType, InputOptionType, DocAlignType, DictionaryGaugeSettings, GaugeEventRelativeFromType, ViewEventType, InputActionEscType, IPropertyVariable } from '../_models/hmi';
 import { GaugesManager } from '../gauges/gauges.component';
 import { Utils } from '../_helpers/utils';
 import { ScriptParam, SCRIPT_PARAMS_MAP, ScriptParamType } from '../_models/script';
@@ -73,6 +73,7 @@ export class FuxaViewComponent implements OnInit, AfterViewInit, OnDestroy {
     protected staticValues: any = {};
     protected plainVariableMapping: VariableMappingDictionary = {};
     private destroy$ = new Subject<void>();
+    private loadOk = false;
 
     constructor(
         private translateService: TranslateService,
@@ -165,6 +166,18 @@ export class FuxaViewComponent implements OnInit, AfterViewInit, OnDestroy {
      * @param view
      */
     public loadHmi(view: View, legacyProfile?: boolean) {
+        if (this.loadOk) {
+            return;
+        }
+        // Execute onClose script for last view
+        let lastView = this.getView(this.view.id);
+        if (lastView) {
+            lastView.property?.events?.forEach(event => {
+                if (event.type === Utils.getEnumKey(ViewEventType, ViewEventType.onclose)) {
+                    this.onRunScript(event);
+                }
+            });
+        }
         if (!this.hmi) {
             this.hmi = this.projectService.getHmi();
         }
@@ -178,7 +191,7 @@ export class FuxaViewComponent implements OnInit, AfterViewInit, OnDestroy {
                 console.error(err);
             }
         }
-        if (view) {
+        if (view?.id) {
             this.id = view.id;
             this.view = view;
             if (view.type === this.cardViewType) {
@@ -197,6 +210,13 @@ export class FuxaViewComponent implements OnInit, AfterViewInit, OnDestroy {
         this.changeDetector.detectChanges();
         this.loadWatch(this.view);
         this.onResize();
+
+        // Execute onOpen script for new current view
+        view.property?.events?.forEach(event => {
+            if (event.type === Utils.getEnumKey(ViewEventType, ViewEventType.onopen)) {
+                this.onRunScript(event);
+            }
+        });
     }
 
 
@@ -492,8 +512,9 @@ export class FuxaViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onToggleValue(ga: GaugeSettings, event: GaugeEvent) {
-        if (event.actoptions && event.actoptions['variable'] && event.actoptions['variable']['variableId']) {
-            this.gaugesManager.toggleSignalValue(event.actoptions['variable']['variableId']);
+        const actionOptions = event.actoptions as ActionOptionsVariable;
+        if (actionOptions?.variable?.variableId) {
+            this.gaugesManager.toggleSignalValue(actionOptions.variable.variableId, actionOptions.variable.bitmask);
         } else if (ga.property && ga.property.variableId) {
             this.gaugesManager.toggleSignalValue(ga.property.variableId);
         }
@@ -624,7 +645,8 @@ export class FuxaViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private checkRestoreValue(htmlevent: Event) {
-        if (htmlevent.ga?.property?.options?.updated && htmlevent.ga.property.options.updatedEsc) {
+        if (htmlevent.ga?.property?.options?.updated &&
+            (htmlevent.ga.property.options.updatedEsc || htmlevent.ga.property.options.actionOnEsc === InputActionEscType.update)) {
             //ToDo there is definitely a better way
             setTimeout(() => {
                 const gaugeStatus = this.getGaugeStatus(htmlevent.ga);
@@ -633,6 +655,8 @@ export class FuxaViewComponent implements OnInit, AfterViewInit, OnDestroy {
                     htmlevent.dom.value = currentInputValue;
                 }
             }, 1000);
+        } else if (htmlevent.ga?.property?.options?.actionOnEsc === InputActionEscType.enter) {
+            this.emulateEnterKey(htmlevent.dom);
         }
     }
 
@@ -697,6 +721,7 @@ export class FuxaViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     loadPage(param: any, viewref: string, options: any) {
         let view: View = this.getView(viewref);
+
         if (view) {
             if (options?.variablesMapping) {
                 this.loadVariableMapping(options.variablesMapping);
@@ -711,7 +736,7 @@ export class FuxaViewComponent implements OnInit, AfterViewInit, OnDestroy {
     openDialog(event, viewref: string, options: any = {}) {
         let dialogData = <FuxaViewDialogData>{
             view: this.getView(viewref),
-            bkColor: 'trasparent',
+            bkColor: 'transparent',
             variablesMapping: options.variablesMapping,
             disableDefaultClose: options.hideClose,
             gaugesManager: this.gaugesManager
@@ -729,6 +754,7 @@ export class FuxaViewComponent implements OnInit, AfterViewInit, OnDestroy {
     onOpenCard(id: string, event, viewref: string, options: any = {}) {
         if (options?.singleCard) {
             this.cards = [];
+            this.changeDetector.detectChanges();
         }
         let view: View = this.getView(viewref);
         if (!view) {
@@ -1024,6 +1050,10 @@ interface VariableMappingType {
 
 interface VariableMappingDictionary {
     [key: string]: VariableMappingType;
+}
+
+interface ActionOptionsVariable {
+    variable: IPropertyVariable;
 }
 
 export class CardModel {

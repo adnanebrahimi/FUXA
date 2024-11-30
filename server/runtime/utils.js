@@ -28,13 +28,28 @@ var utils = module.exports = {
             var temp  = '';
             while((pos = text.indexOf(tagStart, pos)) !== -1) {
                 pos += tagStart.length + 1;
-                temp += src.slice(0, pos) + attribute + ' ' + src.slice(pos);
+                if (text.indexOf('>') === tagStart.length) {
+                    temp += src.slice(0, pos - 1) + ' ' + attribute + ' >' + src.slice(pos);
+                } else {
+                    temp += src.slice(0, pos) + attribute + ' ' + src.slice(pos);
+                }
             }
             if (temp.length) {
                 result = temp;
             }
         }
         return result;
+    },
+
+    domStringSetOverlay: function (htmlString, tagNames) {
+        tagNames.forEach(tagName => {
+            const lowerTagName = tagName.toLowerCase();
+            const regex = new RegExp(`(<${lowerTagName}[^>]*?>.*?</${lowerTagName}>)`, "gis");
+            const style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999; pointer-events: all; display: none;";
+            htmlString = htmlString.replace(regex, `<div style="${style}">$1</div>`);
+        });
+
+        return htmlString;
     },
 
     /**
@@ -70,7 +85,7 @@ var utils = module.exports = {
     },
 
     isEmptyObject: function (value) {
-        return value && Object.keys(value).length === 0 && value.constructor === Object;
+        return !value || (Object.keys(value).length === 0 && value.constructor === Object);
     },
 
     isObject(value) {

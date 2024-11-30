@@ -3,6 +3,7 @@ export class Script {
     id: string;
     name: string;
     code: string;
+    sync?: boolean = false;
     parameters: ScriptParam[] = [];
     scheduling: ScriptScheduling;
     permission: number;
@@ -189,6 +190,14 @@ export class SystemFunctions {
         params:['array', false, false],
         paramsText: 'script.sys-fnc-getHistoricalTag-params',
         paramFilter: ScriptParamFilterType.history
+    },
+    {
+        name: '$sendMessage',
+        mode: null,
+        text: 'script.sys-fnc-sendMessage-text',
+        tooltip: 'script.sys-fnc-sendMessage-tooltip',
+        params: [false, false, false],
+        paramsText: 'script.sys-fnc-sendMessage-params'
     }
 ];
 }
@@ -201,7 +210,8 @@ export class TemplatesCode {
     }
     allFunctions = <SystemFunction[]>[{
         name: 'chart-data', mode: ScriptMode.CLIENT, text: 'script.template-chart-data-text', tooltip: 'script.template-chart-data-tooltip',
-        code: `if (paramLines && Array.isArray(paramLines)) {
+        code: `// Add script parameter 'paramLines' as Chart lines (array)
+if (paramLines && Array.isArray(paramLines)) {
     const count = 10;
     paramLines.forEach(line => {
         var y = [];
